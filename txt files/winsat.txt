@@ -1,0 +1,126 @@
+winsat mem
+get-ciminstance win32_winsat	
+
+function New-Project {
+    param(
+        [string]$DefaultName = "myproject",
+        [switch]$Last,       # reuse last config
+        [switch]$DryRun,     # preview only
+        [string]$ConfigFile  # load from json
+    )
+
+    # --- CONFIG STORAGE ---
+    $configPath = "$env:USERPROFILE\.projscaffold.json"
+
+    # --- PRESETS ---
+    $presets = @{
+        "python-app" = @{
+            Language="python"; Modules=@("src","tests"); Files=@("README.md","requirements.txt","main.py"); Test="test_basic.py"
+        }
+        "node-cli" = @{
+            Language="js"; Modules=@("src","tests"); Files=@("README.md","package.json","index.js"); Test="test_cli.js"
+        }
+        "cpp-lib" = @{
+            Language="cpp"; Modules=@("src","include","tests"); Files=@("README.md","CMakeLists.txt","main.cpp"); Test="test_main.cpp"
+        }
+        "web-project" = @{
+            Language="html"; Modules=@("src","public","tests"); Files=@("README.md","index.html","style.css"); Test="test_ui.js"
+        }
+    }
+
+    # --- STEP 0: Load from config/last ---
+    if ($ConfigFile -and (Test-Path $ConfigFile)) {
+        $cfg = Get-Content $ConfigFile | ConvertFrom-Json
+    } elseif ($Last -and (Test-Path $configPath)) {
+        $cfg = Get-Content $configPath | ConvertFrom-Json
+    } else {
+        # --- STEP 1: Project Name ---
+        $project = Read-Host "Enter project name (default: $DefaultName)"
+        if ([string]::IsNullOrWhiteSpace($project)) { $project = $DefaultName }
+
+        # --- STEP 2: Preset or Custom ---
+        Write-Host "Choose template:"
+        $i=1
+        foreach ($key in $presets.Keys) { Write-Host " [$i] $key"; $i++ }
+        Write-Host " [0] Custom"
+        $choice = Read-Host "Enter number"
+        if ($choice -match '^\d+$' -and [int]$choice -gt 0 -and [int]$choice -le $presets.Count) {
+            $presetKey = ($presets.Keys)[$choice-1]
+            $cfg = $presets[$presetKey]
+            $cfg.Project = $project
+        } else {
+            # Custom flow
+            $lang = Read-Host "Enter language (python/js/java/cpp/go/etc)"
+            if ([string]::IsNullOrWhiteSpace($lang)) { $lang = "generic" }
+
+            $modules = (Read-Host "Enter submodules (comma-separated, e.g. src,tests,docs,config)") -split "," 
+            if (-not $modules) { $modules=@("src","tests","docs") }
+
+            $files = (Read-Host "Enter core files (comma-separated, e.g. README.md,LICENSE,main.$lang)") -split ","
+            if (-not $files) { $files=@("README.md","LICENSE","main.$lang") }
+
+            $testName = Read-Host "Enter test filename (default: test_basic.$lang)"
+            if ([string]::IsNullOrWhiteSpace($testName)) { $testName="test_basic.$lang" }
+
+            $cfg = @{
+                Project=$project; Language=$lang; Modules=$modules; Files=$files; Test=$testName
+            }
+        }
+    }
+
+    # --- DRY RUN ---
+    if ($DryRun) {
+        Write-Host "`n[DRY RUN] Project Structure Preview:"
+        Write-Host " Project: $($cfg.Project)"
+        Write-Host " Language: $($cfg.Language)"
+        Write-Host " Modules: $($cfg.Modules -join ', ')"
+        Write-Host " Files: $($cfg.Files -join ', ')"
+        Write-Host " Test: $($cfg.Test)"
+        return
+    }
+
+    # --- CREATE FOLDERS ---
+    New-Item -ItemType Directory -Force -Path $cfg.Project | Out-Null
+    foreach ($m in $cfg.Modules) {
+        New-Item -ItemType Directory -Force -Path "$($cfg.Project)\$m" | Out-Null
+    }
+
+    # --- CREATE FILES ---
+    foreach ($f in $cfg.Files) {
+        $path = "$($cfg.Project)\$f"
+        New-Item -ItemType File -Force -Path $path | Out-Null
+
+        # Prefill boilerplate
+        switch -regex ($f) {
+            "README.md" { Add-Content $path "# $($cfg.Project)`n" }
+            "LICENSE"   { Add-Content $path "MIT License - $(Get-Date -Format yyyy)" }
+            "main\."    { Add-Content $path "// Entry point" }
+            "index\.html" { Add-Content $path "<!DOCTYPE html><html><head><title>$($cfg.Project)</title></head><body>Hello</body></html>" }
+        }
+    }
+
+    # --- TEST FILE ---
+    if ($cfg.Modules -contains "tests") {
+        New-Item -ItemType File -Force -Path "$($cfg.Project)\tests\$($cfg.Test)" | Out-Null
+    }
+
+    # --- OPTIONAL: Git Init ---
+    $useGit = Read-Host "Initialize Git repo? (y/n)"
+    if ($useGit -eq "y") {
+        Push-Location $cfg.Project
+        git init | Out-Null
+        git add .; git commit -m "Initial commit" | Out-Null
+        Pop-Location
+    }
+
+    # --- SAVE CONFIG ---
+    $cfg | ConvertTo-Json | Set-Content $configPath
+
+    # --- OUTPUT ---
+    Write-Host "`n✅ Project created: .\$($cfg.Project)"
+    Write-Host " Language: $($cfg.Language)"
+    Write-Host " Modules: $($cfg.Modules -join ', ')"
+    Write-Host " Files: $($cfg.Files -join ', ')"
+    Write-Host " Test: $($cfg.Test)"
+    Write-Host " Config saved for reuse!"
+}

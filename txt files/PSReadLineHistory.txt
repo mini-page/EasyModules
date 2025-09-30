@@ -1,0 +1,94 @@
+.$PROFILE
+powermenu
+.$PROFILE
+cls
+$env Home
+$Home
+cd
+ls
+mv .powermenu_config.json $HOME\documents\powershell\Easy Modules
+ls
+scoop bucket add nerd-fonts
+.$PROFILE
+Import-Module Helpers
+z powershell
+ls
+cd easymodule
+cd easymodules
+ls
+Import-Module Helpers
+Import-Module easymodules
+Import-Module "$HOME\Documents\PowerShell\EasyModules\Helpers.psm1"
+restart
+.$PROFILE
+Import-Module Helpers
+.$PROFILE
+Import-Module Helpers
+Import-Module "$HOME\Documents\PowerShell\EasyModules\Helpers.psm1"
+Import-Module "$HOME\Documents\PowerShell\EasyModules\helpers\Helpers.psm1"
+write-colors
+update winget
+Import-Module Helpers
+Import-Module Helpers.psm1
+.$PROFILE
+update winget
+.$PROFILE
+sys
+.$PROFILE
+. "c:\Users\umang\AppData\Local\Programs\cursor\resources\app\out\vs\workbench\contrib\terminal\common\scripts\shellIntegration.ps1"
+.$PROFILE
+help
+# BurntToast
+New-BurntToastNotification -Text "Test", "Module loaded successfully"
+# PSScriptAnalyzer
+Invoke-ScriptAnalyzer -Path "$PROFILE"
+# PSFzf
+ls | Invoke-Fzf
+# Posh-SSH
+# (Requires a server to test)
+cls
+Get-ChildItem Env:
+$env:Path
+$env:USERNAME
+$env:COMPUTERNAME
+Get-ChildItem Env: | Format-Table Key, Value -AutoSize
+Get-ItemProperty -Path "HKCU:\Environment"
+Get-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
+update
+update npm
+gemini
+npm install -g @google/gemini-cli@latest
+.$PROFILE
+cls
+sort
+ls sort
+ll
+la
+ls
+ls | Invoke-Fzf
+ls
+ls | Invoke-Fzf
+cd C:\Users\umang\.blackbox-editor
+ls
+cd extension
+cd extensions
+ls
+cd
+rm -r C:\Users\umang\.blackbox-editor
+cd C:\Users\umang\.blackbox-editor
+ls
+cd dist
+ls
+bat chnagelog.js
+bat changelog.js
+cls
+ls
+cd
+exit
+exit
+z powershell
+git clone https://github.com/mini-page/EasyModules.git
+.$PROFILE
+git add.
+git add
+.$PROFILE

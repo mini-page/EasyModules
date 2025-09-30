@@ -1,0 +1,84 @@
+Here’s a list of **“headache → automation candidates”** that devs do manually all the time:
+
+---
+
+### 🔹 Painful but Automatable Dev Tasks
+
+1. **Environment Setup**
+
+   * Manually creating virtualenvs, installing dependencies, setting up `.env` files.
+   * Automate: `New-Env` function → detect language → auto-create venv/npm/cargo/go mod + inject `.env` template.
+
+2. **Dependency Updater**
+
+   * Updating `requirements.txt`, `package.json`, or `go.mod` by hand.
+   * Automate: `Update-Deps` → runs dependency audit & bumps versions safely.
+
+3. **Project Renamer**
+
+   * Renaming a project means manually changing folder names, config references, package imports.
+   * Automate: `Rename-Project OldName NewName` → recursively updates files, configs, and folder.
+
+4. **License / README Boilerplate**
+
+   * Copy-pasting license text or writing README headers each time.
+   * Automate: `New-Docs` → generates LICENSE, README, CONTRIBUTING.md with placeholders.
+
+5. **.gitignore / .dockerignore Setup**
+
+   * Devs search online for language-specific `.gitignore` each time.
+   * Automate: `New-Gitignore python` → pulls prebuilt ignore files for chosen stack.
+
+6. **Changelog / Version Bumping**
+
+   * Updating `CHANGELOG.md` or version numbers across multiple files is painful.
+   * Automate: `Bump-Version 1.2.0` → updates configs + changelog + tags Git.
+
+7. **Code Formatter Setup**
+
+   * Installing Prettier/Black/Clang-format + configs per project.
+   * Automate: `Setup-Formatter python` → auto installs, writes config, hooks pre-commit.
+
+8. **CI/CD Bootstrap**
+
+   * Writing `.github/workflows/*` or GitLab CI by hand.
+   * Automate: `New-CI github python` → generates a minimal workflow for testing/linting.
+
+9. **Dockerization**
+
+   * Writing `Dockerfile` + `docker-compose.yml` is boilerplate but tedious.
+   * Automate: `New-Docker python` → scaffolds Docker config with service name, ports, envs.
+
+10. **Test File Generator**
+
+* Writing empty test stubs for every module/class.
+* Automate: `New-Tests` → scans project files → creates matching test files.
+
+11. **Boilerplate CRUD APIs**
+
+* Writing repetitive routes/models for simple REST APIs.
+* Automate: `New-API User id:int name:string email:string` → generates routes, model, and test stubs.
+
+12. **Secret Manager**
+
+* Devs copy `.env.example` → fill manually.
+* Automate: `New-Secrets` → creates `.env`, fills defaults, encrypts sensitive ones.
+
+13. **Multi-Project Setup (Monorepo)**
+
+* Manually creating `frontend/`, `backend/`, `docs/` separately.
+* Automate: `New-Monorepo` → sets all at once with shared configs.
+
+14. **Docs Generator**
+
+* Writing `mkdocs.yml` or `Sphinx` by hand is boring.
+* Automate: `New-Docs python` → initializes docs folder, config, index.md.
+
+15. **Git Hooks Setup**
+
+* Manually writing pre-commit scripts (`lint`, `test`, etc.).
+* Automate: `Setup-GitHooks lint,test` → installs hooks automatically.
+
+---
+
+👉 These are all **manual pain points** → each could be its own `New-*` or `Setup-*` function like your `New-Project`.

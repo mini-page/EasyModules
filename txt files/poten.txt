@@ -1,0 +1,193 @@
+if (Get-Command git -ErrorAction SilentlyContinue) {
+
+    function git-sync {
+        <#
+        .SYNOPSIS
+        Pull, commit, and push changes quickly
+        .DESCRIPTION
+        Automates git pull, commit (if needed), and push for the current branch
+        .PARAMETER Message
+        Commit message if there are staged/unstaged changes
+        .PARAMETER AutoPush
+        Automatically push after committing
+        .EXAMPLE
+        git-sync -Message "Update files" -AutoPush
+        #>
+        param(
+            [string]$Message = "",
+            [switch]$AutoPush
+        )
+
+        if (-not (Test-Path .git)) {
+            Write-Color "❌ Not a git repository" Red
+            return
+        }
+
+        # Determine current branch
+        $branch = git rev-parse --abbrev-ref HEAD
+
+        # Pull latest changes
+        Write-Color "⬇️ Pulling latest changes from origin/$branch..." Yellow
+        try {
+            git pull origin $branch
+            Write-Color "✅ Pull completed" Green
+        } catch {
+            Write-Color "❌ Pull failed: $_" Red
+            return
+        }
+
+        # Check for changes
+        $status = git status --porcelain
+        if (-not $status) {
+            Write-Color "✅ No changes to commit" Green
+        } else {
+            # Stage all changes
+            Write-Color "📦 Adding changes..." Yellow
+            git add .
+
+            # Determine commit message
+            if (-not $Message) {
+                $Message = Read-Host "Enter commit message for these changes"
+            }
+
+            # Commit
+            Write-Color "💾 Committing: $Message" Yellow
+            git commit -m $Message
+        }
+
+        # Push if requested or if commit happened
+        if ($AutoPush -or $status) {
+            Write-Color "📤 Pushing to origin/$branch..." Yellow
+            try {
+                git push origin $branch
+                Write-Color "✅ Push completed" Green
+            } catch {
+                Write-Color "❌ Push failed: $_" Red
+            }
+        }
+
+        Write-Color "🎉 git-sync done!" Cyan
+    }
+}
+# Git aliases if available
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        $aliases['gs'] = 'git-status'
+        $aliases['gq'] = 'git-quick'
+    }
+    
+    if (Get-Command fzf -ErrorAction SilentlyContinue) {
+        Write-Color "  FZF: fh (history), fd (directory), fp (process)" Green
+    }
+    
+    if (Get-Command git -ErrorAction SilentlyContinue) {
+        Write-Color "  Git: gs (status), gq (quick commit)" Green
+    }
+    
+        
+# ==========================================================
+# Section 10: FZF Integration (if available)
+# ==========================================================
+
+if (Get-Command fzf -ErrorAction SilentlyContinue) {
+
+    function fz-history {
+        <#
+        .SYNOPSIS
+        Search and run PowerShell history with fzf
+        .DESCRIPTION
+        Interactively search past commands and execute them
+        .EXAMPLE
+        fz-history
+        #>
+        
+        $history = Get-History | Select-Object -ExpandProperty CommandLine -Unique
+        if ($history) {
+            $selected = $history | fzf --height 40% --reverse --prompt "History> " --preview-window=hidden
+            if ($selected) {
+                Write-Color "📜 Executing: $selected" Cyan
+                Invoke-Expression $selected
+            }
+        }
+        else {
+            Write-Color "⚠️ No command history found" Yellow
+        }
+    }
+
+    function fz-dir {
+        <#
+        .SYNOPSIS
+        Navigate directories with fzf
+        .DESCRIPTION
+        Quickly jump into directories (supports favorites and .gitignore)
+        .PARAMETER Path
+        Starting path (default = current directory)
+        .EXAMPLE
+        fz-dir
+        fz-dir -Path C:\Projects
+        #>
+        param(
+            [string]$Path = "."
+        )
+
+        # Define favorite directories (edit this list to your liking)
+        $favorites = @(
+            "$HOME\Documents",
+            "$HOME\Downloads",
+            "$HOME\Projects"
+        )
+
+        # Collect directories
+        $dirs = @()
+
+        # Add favorites first
+        foreach ($fav in $favorites) {
+            if (Test-Path $fav) {
+                $dirs += (Resolve-Path $fav).Path
+            }
+        }
+
+        # Load .gitignore rules if present
+        $gitignore = Join-Path $Path ".gitignore"
+        $ignorePatterns = @()
+        if (Test-Path $gitignore) {
+            $ignorePatterns = Get-Content $gitignore | Where-Object { $_ -and -not $_.StartsWith("#") }
+        }
+
+        # Get directories recursively (skip hidden/system unless in favorites)
+        $allDirs = Get-ChildItem -Path $Path -Recurse -Directory -ErrorAction SilentlyContinue |
+        Where-Object {
+            -not $_.Attributes.ToString().Contains("Hidden") -and
+            -not $_.Attributes.ToString().Contains("System")
+        } |
+        Select-Object -ExpandProperty FullName
+
+        # Apply gitignore filtering (basic pattern match)
+        foreach ($d in $allDirs) {
+            $skip = $false
+            foreach ($pat in $ignorePatterns) {
+                if ($d -like "*$pat*") { $skip = $true; break }
+            }
+            if (-not $skip) { $dirs += $d }
+        }
+
+        if ($dirs) {
+            $selected = $dirs | Sort-Object -Unique | fzf --height 40% --reverse --prompt "Navigate to> " `
+                --preview 'Get-ChildItem -Force {} | Format-List'
+            
+            if ($selected) {
+                Set-Location $selected
+                Write-Color "📂 Changed to: $selected" Green
+            }
+        }
+        else {
+            Write-Color "⚠️ No directories found" Yellow
+        }
+    }
+}
+
+# FZF aliases if available
+    if (Get-Command fzf -ErrorAction SilentlyContinue) {
+        $aliases['fh'] = 'fz-history'
+        $aliases['fd'] = 'fz-dir'
+        $aliases['fp'] = 'fz-process'
+    }
