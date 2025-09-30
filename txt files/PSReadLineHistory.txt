@@ -95,3 +95,11 @@ git add
 z powershell
 ls
 git add .
+git status
+git commit -m "added all the files in the module dir, so not need to lead them again"
+git push
+update help
+get-help update
+get-help cls
+Update-Help
+git add .
