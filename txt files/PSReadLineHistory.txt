@@ -113,3 +113,8 @@ git status
 git commit -m "added latest help for get-help command and added more modules for making its size bigger 😁"
 git push
 git add .
+git commit -m "added latest help for get-help command and added more modules for making its size bigger 😁"
+git push origin main
+gemini
+bat > README.md
+git add .
