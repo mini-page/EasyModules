@@ -103,3 +103,9 @@ get-help update
 get-help cls
 Update-Help
 git add .
+git status
+git commit -m "added latest help for get-help command and added more modules for making its size bigger 😁"
+git push
+git add .
+git status
+git add .
