@@ -118,3 +118,6 @@ git push origin main
 gemini
 bat > README.md
 git add .
+git commit -m "adding README file for users guide 📃"
+git push origin main
+git add .
