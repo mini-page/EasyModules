@@ -59,7 +59,7 @@ Set-PSReadLineOption -PredictionViewStyle ListView
 Set-PSReadLineOption -HistorySearchCursorMovesToEnd
 Set-PSReadLineOption -EditMode Windows
 Set-PSReadLineOption -MaximumHistoryCount 1000
-Set-PSReadLineOption -HistorySavePath "$env:USERPROFILE\Documents\PowerShell\txt files\PSReadLineHistory.txt"
+#Set-PSReadLineOption -HistorySavePath "$env:USERPROFILE\Documents\PowerShell\txt files\PSReadLineHistory.txt"
 Set-PSReadLineOption -Colors @{ "InlinePrediction" = "$([char]27)[90m" }
 
 # Key bindings

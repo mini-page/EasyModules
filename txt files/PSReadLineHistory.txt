@@ -121,3 +121,15 @@ git add .
 git commit -m "adding README file for users guide 📃"
 git push origin main
 git add .
+git status
+git restore txt files/PSReadLineHistory.txt
+git commit -m "adding gitignore 📃"
+git push origin main
+ls
+pwsh requirements.ps1
+restart -here
+git add .
+git status
+git restore C:\Users\umang\Documents\PowerShell\txt files\PSReadLineHistory.txt
+git restore
+git add .
