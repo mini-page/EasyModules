@@ -1,3 +1,34 @@
+# Requirements
+
+Before starting, please install the following tools:
+
+1. **Terminal Preview**
+
+   * Source: Microsoft Store
+   * Description: Modern terminal for Windows.
+
+2. **PowerShell 7 (latest version)**
+
+   * Download: [PowerShell GitHub Releases](https://github.com/PowerShell/PowerShell/releases)
+   * Required for running modern scripts and modules.
+
+3. **Python (latest stable release)**
+
+   * Download: [Python.org](https://www.python.org/downloads/)
+   * Make sure to check **"Add Python to PATH"** during installation.
+
+4. **Git (optional)**
+
+   * Download: [Git SCM](https://git-scm.com/downloads)
+   * Useful for version control and managing repositories.
+
+5. **Windows Package Manager (winget)**
+
+   * Preinstalled on Windows 11 (and some Win10 builds).
+   * If missing, install via: [Winget Installation Guide](https://learn.microsoft.com/en-us/windows/package-manager/winget/)
+
+---
+
 # PowerShell Profile Repository
 
   This repository contains a personalized configuration for a PowerShell environment. It includes custom
